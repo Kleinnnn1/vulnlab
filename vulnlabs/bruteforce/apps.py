@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class BruteforceConfig(AppConfig):
-    name = 'bruteforce'
+    name = 'vulnlabs.bruteforce'

@@ -10,22 +10,25 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n^shr9y#uubl_+ueu#9yd*o3m#r4w3x8-@mth84g&e%_mm6y=3'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'fallback-dev-key-not-securef')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-ALLOWED_HOSTS = []
+SECURITY_MODE = os.environ.get('SECURITY_MODE', 'vulnerable').lower()
+IS_HARDENED = SECURITY_MODE == 'hardened'
 
 
 # Application definition
@@ -37,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'core',
+    'vulnlabs.bruteforce',
 ]
 
 MIDDLEWARE = [
@@ -115,3 +121,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+ACCOUNT_LOCKOUT_THRESHOLD = 5
+ACCOUNT_LOCKOUT_DURATION_SECONDS = 300
+LOGIN_RATE_LIMIT = '10/m'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
+}
